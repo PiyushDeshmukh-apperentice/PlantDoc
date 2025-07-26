@@ -1,0 +1,15 @@
+numpy
+pandas
+matplotlib
+scikit-learn
+opencv-python
+Pillow
+tensorflow
+keras
+scikit-image
+imgaug
+albumentations
+seaborn
+tqdm
+h5py
+ultralytics
