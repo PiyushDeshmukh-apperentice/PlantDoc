@@ -7,7 +7,7 @@ import os
 
 # --- CONFIG ---
 MODEL_PATH = os.path.join("model", "plant_disease_classification_advanced_model.h5")
-CSV_PATH = "/home/piyush/Desktop/Projects/Plant_Disease/plant_disease_expert_reports_english.csv"
+CSV_PATH = r"/mnt/StorageHDD/Projects/Plant_Disease/plant_disease_expert_reports_english.csv"
 IMG_SIZE = (128, 128)
 
 # --- LOAD MODEL & CSV ---
