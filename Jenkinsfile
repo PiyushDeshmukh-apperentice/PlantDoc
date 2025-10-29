@@ -6,6 +6,9 @@ pipeline {
     CONTAINER_NAME = 'plantdoc_app'
     // Optional: change to your registry (e.g. 'docker.io/yourname/plantdoc')
     DOCKER_REGISTRY = ''
+    // Add Docker tool
+    DOCKER_TOOL = tool name: 'docker', type: 'org.jenkinsci.plugins.docker.commons.tools.DockerTool'
+    PATH = "${env.DOCKER_TOOL}/bin:${env.PATH}"
   }
 
   options {
@@ -59,8 +62,8 @@ pipeline {
     stage('Build Docker image') {
       steps {
         script {
-          // Build the Docker image on the Jenkins host
-          sh "sudo docker build -t ${IMAGE_NAME} ."
+          // Build using Docker Pipeline plugin
+          docker.build("${IMAGE_NAME}")
         }
       }
     }
@@ -83,14 +86,15 @@ pipeline {
 
     stage('Deploy (run container)') {
       steps {
-        // Stop and remove any previous container, then run the new image
-        sh '''
-        set -e
-        sudo docker rm -f ${CONTAINER_NAME} || true
-        # Run container mapping both streamlit port and nginx port used in Dockerfile
-        sudo docker run -d --name ${CONTAINER_NAME} -p 8501:8501 -p 80:80 --restart unless-stopped ${IMAGE_NAME}
-        echo "Container ${CONTAINER_NAME} started"
-        '''
+        script {
+          // Stop and remove any previous container, then run the new image
+          sh """
+            set -e
+            docker container rm -f ${CONTAINER_NAME} || true
+            docker run -d --name ${CONTAINER_NAME} -p 8501:8501 -p 80:80 --restart unless-stopped ${IMAGE_NAME}
+            echo "Container ${CONTAINER_NAME} started"
+          """
+        }
       }
     }
   }
