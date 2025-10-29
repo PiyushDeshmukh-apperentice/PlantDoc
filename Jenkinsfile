@@ -60,7 +60,7 @@ pipeline {
       steps {
         script {
           // Build the Docker image on the Jenkins host
-          sh "docker build -t ${IMAGE_NAME} ."
+          sh "sudo docker build -t ${IMAGE_NAME} ."
         }
       }
     }
@@ -73,9 +73,9 @@ pipeline {
         withCredentials([usernamePassword(credentialsId: 'docker-registry-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
           sh '''
           # tag and push
-          docker tag ${IMAGE_NAME} ${DOCKER_REGISTRY}/${IMAGE_NAME}
-          echo $DOCKER_PASS | docker login --username $DOCKER_USER --password-stdin ${DOCKER_REGISTRY}
-          docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}
+          sudo docker tag ${IMAGE_NAME} ${DOCKER_REGISTRY}/${IMAGE_NAME}
+          echo $DOCKER_PASS | sudo docker login --username $DOCKER_USER --password-stdin ${DOCKER_REGISTRY}
+          sudo docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}
           '''
         }
       }
@@ -86,9 +86,9 @@ pipeline {
         // Stop and remove any previous container, then run the new image
         sh '''
         set -e
-        docker rm -f ${CONTAINER_NAME} || true
+        sudo docker rm -f ${CONTAINER_NAME} || true
         # Run container mapping both streamlit port and nginx port used in Dockerfile
-        docker run -d --name ${CONTAINER_NAME} -p 8501:8501 -p 80:80 --restart unless-stopped ${IMAGE_NAME}
+        sudo docker run -d --name ${CONTAINER_NAME} -p 8501:8501 -p 80:80 --restart unless-stopped ${IMAGE_NAME}
         echo "Container ${CONTAINER_NAME} started"
         '''
       }
